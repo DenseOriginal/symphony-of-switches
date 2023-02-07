@@ -45,7 +45,7 @@ void loop() {
   Serial.println(sensorValue, mapped);
 
   if (mapped > 10 && diff > 0) {
-    sendData(0, mapped);
+    sendData(2, mapped);
   }
   delay(10);
 
