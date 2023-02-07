@@ -8,7 +8,7 @@ WiFiClient client;
 String SSID = "iot";
 String PSK = "mrfunkfunk";
 
-int id = 1;
+int id = 4;
 int dataToSend = 0;
 int previous;
 
@@ -43,14 +43,14 @@ void setup()
 // // // // // // // // // // //
 void loop(void) 
 {
-  Serial.print("analog: ");
-  Serial.println(analogRead(A0));
+  //Serial.print("analog: ");
+  //Serial.println(analogRead(A0));
   
 
-  delay(400);
+  delay(10);
   dataToSend = analogRead(A0)/4 -1;
-  Serial.print("data: ");
-  Serial.println(dataToSend);
+  //Serial.print("data: ");
+  //Serial.println(dataToSend);
 
   if(analogRead(A0) < previous-20 || analogRead(A0) > previous+20)
   {
@@ -69,7 +69,7 @@ void loop(void)
 
 void sendData(int id, int value) 
 {
-  Serial.print("sent: ");
+  Serial.print("---sent: ");
   Serial.println(value);
   http.begin(client, "http://192.168.1.100:1337");
   http.POST(String(id) + "," + String(value));
