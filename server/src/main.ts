@@ -26,7 +26,8 @@ const state: State = {
 		color: randomColor(),
 		pos: Math.random() * NUM_LEDS,
 		speed: 0,
-	}
+	},
+	red: false,
 }
 
 // ---- animation-loop
@@ -35,7 +36,9 @@ setInterval(function () {
 	diffuseSpot(state.colorChannel);
 	runnerIdle(state);
 	singleRunnerIdle(state);
-	const uint32Array = colorChannelToNumberUInt32(state.colorChannel);
+	const uint32Array = !state.red ?
+		colorChannelToNumberUInt32(state.colorChannel) :
+		colorChannelToNumberUInt32(Array.from({ length: NUM_LEDS }).fill([255, 0, 0]) as RGB[]);
 
 	for (var i = 0; i < NUM_LEDS; i++) {
 		channel.array[i] = uint32Array[i];
@@ -57,7 +60,8 @@ startHttpListener((id, data) => {
 		case 2: return colorSparkle(state, map(data, 0, 255, 0, NUM_LEDS), [255, 0, 0]);
 		case 3: return colorSparkle(state, map(data, 0, 255, 0, NUM_LEDS), [0, 255, 0]);
 		case 4: return colorSparkle(state, map(data, 0, 255, 0, NUM_LEDS), [0, 0, 255]);
-		case 5: return singleRunnerEffect(state, map(data, 0, 255, 0, 0.5))
+		case 5: return singleRunnerEffect(state, map(data, 0, 255, 0, 0.5));
+		case 666: return state.red = true;
 		default: break;
 	}
 })

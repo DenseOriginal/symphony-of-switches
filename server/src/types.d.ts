@@ -7,6 +7,7 @@ export interface State {
     iterations: number;
     runners: RunnerState[];
     singleRunner: RunnerState;
+    red: boolean;
 }
 
 interface RunnerState {
