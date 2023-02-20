@@ -1,7 +1,7 @@
 import { randomColor } from "../helpers";
 import { RunnerState, State } from "../types";
 
-export function singleRunner(state: State, idx: number): void {
+function singleRunner(state: State, idx: number): void {
     const {
         pos,
         color,

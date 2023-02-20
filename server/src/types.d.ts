@@ -6,6 +6,7 @@ export interface State {
     NUM_LEDS: number;
     iterations: number;
     runners: RunnerState[];
+    singleRunner: RunnerState;
 }
 
 interface RunnerState {

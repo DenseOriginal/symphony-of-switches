@@ -1,9 +1,11 @@
 import ws281x from "rpi-ws281x-native";
+import { colorSparkle } from "./effects/color-sparkle";
 import { runnerEffect, runnerIdle } from "./effects/runner";
+import { singleRunnerEffect, singleRunnerIdle } from "./effects/single-runner";
 import { sparkle } from "./effects/sparkle";
 import { addRandomColorSpot, colorChannelToNumberUInt32, diffuseSpot, map, randomColor } from "./helpers";
 import { ColorChannel, RGB, State } from "./types";
-import { startUdpListener } from "./udp-listener";
+import { startHttpListener } from "./udp-listener";
 
 const NUM_LEDS = 30;
 
@@ -19,7 +21,12 @@ const state: State = {
 	colorChannel: Array.from({ length: NUM_LEDS }).fill([0, 0, 0]) as ColorChannel,
 	iterations: 0,
 	NUM_LEDS,
-	runners: []
+	runners: [],
+	singleRunner: {
+		color: randomColor(),
+		pos: Math.random() * NUM_LEDS,
+		speed: 0,
+	}
 }
 
 // ---- animation-loop
@@ -27,6 +34,7 @@ setInterval(function () {
 
 	diffuseSpot(state.colorChannel);
 	runnerIdle(state);
+	singleRunnerIdle(state);
 	const uint32Array = colorChannelToNumberUInt32(state.colorChannel);
 
 	for (var i = 0; i < NUM_LEDS; i++) {
@@ -40,16 +48,16 @@ setInterval(function () {
 
 console.log('Press <ctrl>+C to exit.');
 
-startUdpListener()
-	.on('message', (msg) => {
-		const id = msg.readUInt8(0);
-		const data = msg.readUInt8(1);
-		console.log(`Received data from ID: ${id}, Data: ${data}`);
-	
-		switch (id) {
-			case 0: return sparkle(state, map(data, 0, 255, 0, NUM_LEDS));
-			case 1: return runnerEffect(state, map(data, 0, 255, 0, 1));
-			default: break;
-		}
-		// add the ID and data to the map
-	});
+startHttpListener((id, data) => {
+	console.log(`Received data from ID: ${id}, Data: ${data}`);
+
+	switch (id) {
+		case 0: return sparkle(state, map(data, 0, 255, 0, NUM_LEDS));
+		case 1: return runnerEffect(state, map(data, 0, 255, 0, 1));
+		case 2: return colorSparkle(state, map(data, 0, 255, 0, NUM_LEDS), [255, 0, 0]);
+		case 3: return colorSparkle(state, map(data, 0, 255, 0, NUM_LEDS), [0, 255, 0]);
+		case 4: return colorSparkle(state, map(data, 0, 255, 0, NUM_LEDS), [0, 0, 255]);
+		case 5: return singleRunnerEffect(state, map(data, 0, 255, 0, 0.5))
+		default: break;
+	}
+})

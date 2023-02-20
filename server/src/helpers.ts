@@ -42,6 +42,14 @@ export function addRandomColorSpot(colorChannel: ColorChannel): void {
     colorChannel[i] = randomColor();
 }
 
+export function mergeColors(a: RGB, b: RGB): RGB {
+    return [
+        a[0] + b[0],
+        a[1] + b[1],
+        a[2] + b[2]
+    ].map(v => clamp(v, 0, 255)) as RGB;
+}
+
 export function clamp(input: number, min: number, max: number): number {
     return input < min ? min : input > max ? max : input;
 }
